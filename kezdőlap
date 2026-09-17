@@ -16,18 +16,12 @@ public class HomeController {
     private ClassroomRepository classroomRepository;
 
     /**
-     * A webalkalmazás kezdőlapja (Gyökér URL: /)
+ (Gyökér URL: /)
      */
     @GetMapping("/")
     public String homePage(Model model) {
-        // Lekérdezzük az összes elmentett osztályt az adatbázisból.
-        // Mivel ez egy központi adatbázisból jön, minden eszközön ugyanazokat az adatokat fogja mutatni.
         List<Classroom> classrooms = classroomRepository.findAll();
-        
-        // Hozzáadjuk a listát a modellhez, hogy a HTML (Thymeleaf) ki tudja rajzolni
         model.addAttribute("classrooms", classrooms);
-        
-        // Visszaadjuk az index.html sablont a kezdőképernyőhöz
         return "index";
     }
 }
