@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Osztályterem Kezelő</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --accent-color: #bb86fc;
+            --accent-hover: #9955e8;
+            --border-color: #333333;
+            --input-bg: #2a2a2a;
+        }
+
+        body.light-mode {
+            --bg-color: #f4f4f9;
+            --text-color: #333333;
+            --card-bg: #ffffff;
+            --accent-color: #6200ee;
+            --accent-hover: #4b00b5;
+            --border-color: #cccccc;
+            --input-bg: #f9f9f9;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Világos/Sötét mód gomb a sarokban */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            cursor: pointer;
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .theme-toggle:hover {
+            background: var(--accent-hover);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        h1, h2 {
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 350px;
+            margin: 15px auto;
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .secondary-btn {
+            background-color: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--text-color);
+        }
+        .secondary-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Oldalak elrejtése/megjelenítése */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* Osztályrács és listák */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Új osztály 34 soros beviteli mezői */
+        .input-scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+        }
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .input-row span {
+            width: 40px;
+            text-align: right;
+            margin-right: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .input-row input {
+            flex: 1;
+            padding: 8px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .class-title-input {
+            width: 100%;
+            max-width: 350px;
+            padding: 12px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: var(--card-bg);
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sötét / Világos mód kapcsoló -->
+    <button class="theme-toggle" onclick="toggleTheme()">☀️ / 🌙 Mód</button>
+
+    <div class="container">
+
+        <!-- 1. KEZDŐKÉPERNYŐ -->
+        <div id="home-page" class="page active">
+            <h1>Osztályterem Kezelő</h1>
+            <button class="btn" onclick="showPage('existing-classes-page')">Meglévő osztály / Előzmények</button>
+            <button class="btn" onclick="showPage('new-class-page')">Új osztályterem</button>
+        </div>
+
+        <!-- 2. MEGLÉVŐ OSZTÁLYOK ÉS ÉVFOLYAMOK -->
+        <div id="existing-classes-page" class="page">
+            <h2>Előzmények / Évfolyamok</h2>
+            <p>Válassz egy évfolyamot / osztályt:</p>
+            
+            <div class="grid-container" id="class-buttons-grid">
+                <!-- Javascript generálja be az 5-12 a-b osztályokat -->
+            </div>
+
+            <button class="btn secondary-btn" onclick="showPage('home-page')">Vissza a főoldalra</button>
+        </div>
+
+        <!-- 3. EGYEDI OSZTÁLY NÉZETE (Névsor, Keverés, Csere) -->
+        <div id="class-detail-page" class="page">
+            <h2 id="detail-class-name">Osztály Neve</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <button class="btn" style="display:inline-block; width:45%; margin-right:5%;" onclick="mixStudents()">🎲 Keverés</button>
+                <button class="btn secondary-btn" style="display:inline-block; width:45%; margin-top:0;" onclick="swapStudents()">🔄 Csere</button>
+            </div>
+
+            <div class="input-scroll-container">
+                <ul id="student-list">
+                    <!-- Itt jelennek meg a nevek -->
+                </ul>
+            </div>
+
+            <button class="btn secondary-btn" onclick="showPage('existing-classes-page')">Vissza az osztályokhoz</button>
+        </div>
+
+        <!-- 4. ÚJ OSZTÁLYTEREM LÉTREHOZÁSA (34 sor) -->
+        <div id="new-class-page" class="page">
+            <h2>Új Osztályterem Létrehozása</h2>
+            
+            <div>
+                <input type="text" id="new-class-name" class="class-title-input" placeholder="Osztály nevezése (pl. 9.c)">
+            </div>
+
+            <p style="text-align: left; margin-bottom: 5px; font-weight: bold;">Írd be a 34 tanuló nevét:</p>
+            
+            <div class="input-scroll-container" id="inputs-container">
+                <!-- JavaScript generálja a 34 beviteli sort -->
+            </div>
+
+            <button class="btn" onclick="saveNewClass()">Mentés</button>
+            <button class="btn secondary-btn" onclick="showPage('home-page')">Mégse</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Helyi adatbázis szimuláció (localStorage), hogy ne vesszenek el az adatok bezáráskor sem
+        let database = JSON.parse(localStorage.getItem('classrooms_db')) || {};
+
+        // Alapértelmezett 5-12 évfolyamok a-b osztályokkal feltöltése, ha még üres a tárhely
+        function initDefaultData() {
+            if (Object.keys(database).length === 0) {
+                const grades = [5, 6, 7, 8, 9, 10, 11, 12];
+                const sections = ['a', 'b'];
+
+                grades.forEach(grade => {
+                    sections.forEach(sec => {
+                        let className = `${grade}.${sec}`;
+                        let students = [];
+                        for (let i = 1; i <= 34; i++) {
+                            students.push(`${className} Tanuló ${i}`);
+                        }
+                        database[className] = students;
+                    });
+                });
+                localStorage.setItem('classrooms_db', JSON.stringify(database));
+            }
+        }
+        initDefaultData();
+
+        // Oldalak közötti váltás logikája
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            if (pageId === 'existing-classes-page') {
+                renderClassGrid();
+            }
+        }
+
+        // Meglévő osztályok gombjainak kirajzolása (5-12 a-b + újonnan hozzáadottak)
+        function renderClassGrid() {
+            const grid = document.getElementById('class-buttons-grid');
+            grid.innerHTML = '';
+
+            for (let className in database) {
+                let btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.style.margin = '0';
+                btn.style.padding = '10px';
+                btn.innerText = className.toUpperCase();
+                btn.onclick = () => openClass(className);
+                grid.appendChild(btn);
+            }
+        }
+
+        // Aktuális osztály megnyitása és nevek listázása
+        let currentActiveClassName = '';
+        function openClass(className) {
+            currentActiveClassName = className;
+            document.getElementById('detail-class-name').innerText = `Osztály: ${className.toUpperCase()}`;
+            
+            renderStudentList();
+            showPage('class-detail-page');
+        }
+
+        function renderStudentList() {
+            const listEl = document.getElementById('student-list');
+            listEl.innerHTML = '';
+            
+            database[currentActiveClassName].forEach((name, index) => {
+                let li = document.createElement('li');
+                li.innerText = `${index + 1}. ${name}`;
+                listEl.appendChild(li);
+            });
+        }
+
+        // Keverés funkció (Fisher-Yates algoritmus)
+        function mixStudents() {
+            let students = database[currentActiveClassName];
+            for (let i = students.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [students[i], students[j]] = [students[j], students[i]];
+            }
+            database[currentActiveClassName] = students;
+            renderStudentList();
+        }
+
+        // Csere funkció (pl. első és utolsó vagy véletlenszerű két tanuló cseréje)
+        function swapStudents() {
+            let students = database[currentActiveClassName];
+            if (students.length >= 2) {
+                let idx1 = Math.floor(Math.random() * students.length);
+                let idx2;
+                do {
+                    idx2 = Math.floor(Math.random() * students.length);
+                } while (idx1 === idx2);
+
+                let temp = students[idx1];
+                students[idx1] = students[idx2];
+                students[idx2] = temp;
+                
+                database[currentActiveClassName] = students;
+                renderStudentList();
+                alert(`Megcserélve: ${idx1 + 1}. és a ${idx2 + 1}. tanuló.`);
+            }
+        }
+
+        // Új osztály létrehozásához a 34 input sor generálása
+        const inputsContainer = document.getElementById('inputs-container');
+        for (let i = 1; i <= 34; i++) {
+            let row = document.createElement('div');
+            row.className = 'input-row';
+            row.innerHTML = `<span>${i}.</span><input type="text" placeholder="${i}. tanuló neve" data-index="${i-1}">`;
+            inputsContainer.appendChild(row);
+        }
+
+        // Új osztály mentése
+        function saveNewClass() {
+            let classNameInput = document.getElementById('new-class-name').value.trim();
+            if (!classNameInput) {
+                alert('Kérlek add meg az osztály nevét!');
+                return;
+            }
+
+            let studentInputs = inputsContainer.querySelectorAll('input');
+            let students = [];
+            studentInputs.forEach((input, index) => {
+                let name = input.value.trim() !== '' ? input.value.trim() : `Tanuló ${index + 1}`;
+                students.push(name);
+            });
+
+            // Mentés az adatbázisba és localStorage-ba
+            database[classNameInput] = students;
+            localStorage.setItem('classrooms_db', JSON.stringify(database));
+
+            alert('Osztály sikeresen mentve!');
+            
+            // Mezők tiszta lappal indítása
+            document.getElementById('new-class-name').value = '';
+            studentInputs.forEach(input => input.value = '');
+
+            // Visszairányítás a meglévő osztályokhoz
+            showPage('existing-classes-page');
+        }
+
+        // Sötét / Világos mód váltás
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+        }
+    </script>
+</body>
+</html>
